@@ -1,12 +1,11 @@
 {application, sqor_msg_publisher,
  [
-  {description, ""},
-  {vsn, "1"},
-  {registered, []},
-  {applications, [
-                  kernel,
-                  stdlib
-                 ]},
+  {description, "Generic Messge Publisher. It may enrich message with more info, transform or filter before publish to rabbitmq. Configurable."},
+  {vsn, "0.0.1"},
+  {id, "IAT"},
+  {registered, [sqor_msg_publisher]},
+  {applications, [kernel, stdlib, sasl]},
+  {included_applications, [lager]},
   {mod, { sqor_msg_publisher_app, []}},
-  {env, []}
+  {env, [{publisher_conf,"/opt/sqor/sqor_msg_publisher/priv/sqor_msg_publisher.config"}]}
  ]}.
