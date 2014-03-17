@@ -1,0 +1,12 @@
+{application, sqor_msg_publisher,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { sqor_msg_publisher_app, []}},
+  {env, []}
+ ]}.
