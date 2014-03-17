@@ -2,17 +2,26 @@
 -define(SQOR_MSG_PUBLISHER_CONFIG_HRL, true).
 -include_lib("amqp_client/include/amqp_client.hrl").
 
--record(sqor_message_processor, {
-  name = undefined,
-  opts = []     
+-record(sqor_message_processor_config, {
+   enrich_payload = undefined,
+   enrich_payload_opts = [],
+   transform_payload = undefined,
+   transform_payload_opts = [],
+   filter_payload = undefined,
+   filter_payload_opts = []
+ 
 }).
 
+-record(sqor_msg_pipeline_config, {
+    message_processor = [#sqor_message_processor{}]    
+        
+}).
 
--record(soqr_publisher_config, {
+-record(sqor_msg_publisher_config, {
    amqp_connection = <<"">>,
    exchange = #exchange{},
-   queue = #amqqueue{},
-   message_processor = [#pre_publish_processor{}]
+   queue = #amqqueue{}
+
 }).
 
 -endif.
