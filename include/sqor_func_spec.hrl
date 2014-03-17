@@ -1,0 +1,2 @@
+-spec start_link() -> pid().
+-spec init(list()) -> {ok, term()}.
