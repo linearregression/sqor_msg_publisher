@@ -5,6 +5,8 @@
 %% Application callbacks
 -export([start/2, stop/1]).
 
+-export([create_config_table/0, load_into_mnesia/1]).
+
 -include_lib("sqor_constant.hrl").
 -include_lib("sqor_erl_common/include/app_logger.hrl").
 -include_lib("sqor_msg_publisher_config.hrl").
@@ -41,7 +43,8 @@ stop(_State) ->
 
 create_config_table()->
     ?INFO_MSG("[~s]: Trying to initialize mnesia schema...",[?MODULE]),
-    ok =  app_helper:stop_app(mnesia),
+    
+    stopped = mnesia:stop(),
     ok = mnesia:start(), 
     mnesia:delete_table(sqor_supported_events_config),
     mnesia:delete_table(sqor_msg_publisher_config),
@@ -57,6 +60,8 @@ create_config_table()->
             ]),
 
     stopped = mnesia:stop(),
+    ?INFO_MSG("[~s]: Success to initialized mnesia schema...",[?MODULE]),
+
     ok.
 
 load_into_mnesia(ConfigFile) ->
