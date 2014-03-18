@@ -59,13 +59,13 @@ create_config_table()->
             {disc_copies, [node()]}
             ]),
 
-    stopped = mnesia:stop(),
+    ok = mnesia:start(),
     ?INFO_MSG("[~s]: Success to initialized mnesia schema...",[?MODULE]),
 
     ok.
 
 load_into_mnesia(ConfigFile) ->
-    [Config] = sqor_msg_consumer_config:get_config_values(ConfigFile), 
+    [Config] = app_config_helper:get_config_values(ConfigFile), 
     [AmqpParams]= sqor_msg_consumer_config:get_connection_setting(Config),
     [Event_Mods] = ?parse(supported_events, Config, []),
     
