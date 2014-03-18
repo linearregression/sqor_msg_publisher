@@ -1,6 +1,6 @@
 -module(sqor_amqp_connection).
 
--include("sqor_consumer_constant.hrl").
+%-include("sqor_consumer_constant.hrl").
 
 -export([get_connection_setting/1, get_amqp_params/1,
          get_exchange_setting/1,
@@ -20,7 +20,7 @@
 -include_lib("eunit/include/eunit.hrl").
 -endif.
 
-
+-define(to_string(A), type_utils:to_string(A)).
 
 %% @doc Read connection settings to rabbitmq
 %% @end

@@ -59,8 +59,9 @@ create_config_table([Name|T]) when is_atom(Name) ->
 load_into_mnesia(ConfigFile) ->
     [Config] = sqor_msg_consumer_config:get_config_values(ConfilgFile), 
     [AmqpParams]= sqor_msg_consumer_config:get_connection_setting(Config),
-    Plugins = ?parse(payload_enrich, Config, undefined),
+    [Event_Mods] = ?supported_events, Config, []),
+    
     mnesia:transaction(app_config_helper:insert(sqor_msg_publisher_config, AmqpParams)),
-    mnesia:transaction(sqor_msg_pipeline_config, message_processor, Values),
+   % mnesia:transaction(sqor_msg_pipeline_config, message_processor, Values),
 
 
