@@ -5,6 +5,7 @@
 %% Application callbacks
 -export([start/2, stop/1]).
 
+-include_lib("sqor_constant.hrl").
 -include_lib("sqor_erl_common/include/app_logger.hrl").
 -include_lib("sqor_msg_publisher_config.hrl").
 
@@ -29,7 +30,7 @@ start()->
 start(_StartType, [{sqor_msg_publisher_conf, ConfigFile}]) ->
     ?INFO_MSG("Starting ~s: start/2~n", [?MODULE]),    
     ok = create_config_table(),
-    ok  = load_into_mnesia(ConfigFile)
+    ok  = load_into_mnesia(ConfigFile),
     sqor_msg_publisher_sup:start_link().
 
 stop(_State) ->
@@ -42,26 +43,28 @@ create_config_table()->
     ?INFO_MSG("[~s]: Trying to initialize mnesia schema...",[?MODULE]),
     ok =  app_helper:stop_app(mnesia),
     ok = mnesia:start(), 
-    create_config_table([sqor_msg_publisher_config, sqor_msg_pipeline_config]),    
+    mnesia:delete_table(sqor_supported_events_config),
+    mnesia:delete_table(sqor_msg_publisher_config),
+    mnesia:create_table(sqor_supported_events_config, [
+            {type, set},
+            {attributes, record_info(fields, sqor_supported_events_config)},
+            {disc_copies, [node()]}
+            ]),
+    mnesia:create_table(sqor_msg_publisher_config, [
+            {type, set},
+            {attributes, record_info(fields, sqor_msg_publisher_config)},
+            {disc_copies, [node()]}
+            ]),
+
     stopped = mnesia:stop(),
     ok.
 
-create_config_table([]) -> ok;
-create_config_table([Name|T]) when is_atom(Name) ->
-    mnesia:delete_table(Name),
-    mnesia:create_table(Name, [
-            {type, set},
-            {attributes, record_info(fields, Name)},
-            {disc_copies, [node()]}
-            ]),
-    create_config_table([Name|T]). 
-
 load_into_mnesia(ConfigFile) ->
-    [Config] = sqor_msg_consumer_config:get_config_values(ConfilgFile), 
+    [Config] = sqor_msg_consumer_config:get_config_values(ConfigFile), 
     [AmqpParams]= sqor_msg_consumer_config:get_connection_setting(Config),
-    [Event_Mods] = ?supported_events, Config, []),
+    [Event_Mods] = ?parse(supported_events, Config, []),
     
-    mnesia:transaction(app_config_helper:insert(sqor_msg_publisher_config, AmqpParams)),
+    mnesia:transaction(app_config_helper:insert(sqor_msg_publisher_config, AmqpParams)).
    % mnesia:transaction(sqor_msg_pipeline_config, message_processor, Values),
 
 
